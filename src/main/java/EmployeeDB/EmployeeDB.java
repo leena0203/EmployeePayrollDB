@@ -95,16 +95,26 @@ public class EmployeeDB {
 		}
 	}
 	public int updateEmployeeData(String name, double salary) {
-		return this.updateEmployeeDataUsingStatement(name, salary);
+		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
 	}
-
-
 	private int updateEmployeeDataUsingStatement(String name, double salary) {
 		String sql = String.format("update employee_payroll set salary = %.2f  where name = '%s';", salary, name);
 		try(Connection connection  = this.getConnection()){
 			Statement statement = connection.createStatement();
 			return statement.executeUpdate(sql);
 		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) {
+		try (Connection connection = this.getConnection()) {
+			String sql = "Update employee_payroll set salary = ? where name = ? ; " ; 
+			PreparedStatement prepareStatement = (PreparedStatement) connection.prepareStatement(sql);
+			prepareStatement.setDouble(1, salary);
+			prepareStatement.setString(2, name);
+			return prepareStatement.executeUpdate();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return 0;

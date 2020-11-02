@@ -18,7 +18,7 @@ public class EmpPayrollTest {
 	    testData = test.readEmployeePayrollData(IOService.DB_IO);
 		assertEquals(3, testData.size());
 	}
-	//UC3
+	//UC3 and UC4
 	@Test
 	public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncDatabase() {
 		test = new EmployeePayrollService();

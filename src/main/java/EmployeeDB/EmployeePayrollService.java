@@ -9,9 +9,9 @@ public class EmployeePayrollService {
 
 	List<EmployeePayrollData> employeePayrollList;
 	private static EmployeeDB employeeDB;
-public EmployeePayrollService() {
-	employeeDB = EmployeeDB.getInstance();
-}
+	public EmployeePayrollService() {
+		employeeDB = EmployeeDB.getInstance();
+	}
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
 		this();
 		this.employeePayrollList = employeePayrollList;
@@ -82,6 +82,6 @@ public EmployeePayrollService() {
 			new EmployeePayrollFileIOservice().printData();
 		}
 	}
-	
+
 
 }
