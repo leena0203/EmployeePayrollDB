@@ -1,5 +1,6 @@
 package EmployeeDB;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -81,6 +82,9 @@ public class EmployeePayrollService {
 		if (fileIo.equals(IOService.FILE_IO)) {
 			new EmployeePayrollFileIOservice().printData();
 		}
+	}
+	public List<EmployeePayrollData> readEmployeePayrollForDateRange(LocalDate start, LocalDate end) {
+			return employeeDB.getEmployeeForDateRange(start, end);
 	}
 
 
