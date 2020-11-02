@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -37,5 +38,14 @@ public class EmpPayrollTest {
 	    LocalDate end = LocalDate.now();
 	    testData = test.readEmployeePayrollForDateRange(start, end);
 	    assertEquals(2, testData.size());
+	}
+	//UC6
+	@Test
+	public void givenPayrollData_WhenAvgSalaryRetrievedByGender_ShouldReturnProperValue() {
+		test = new EmployeePayrollService();
+		test.readEmployeePayrollData(IOService.DB_IO);
+	    Map<String, Double> avgSalaryByGender = test.readAvgSalaryByGender();
+	    assertTrue(avgSalaryByGender.get("M").equals(3650000.0));
+	    assertTrue(avgSalaryByGender.get("F").equals(3000000.0));
 	}
 }

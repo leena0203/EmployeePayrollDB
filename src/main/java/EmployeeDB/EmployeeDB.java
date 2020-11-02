@@ -9,7 +9,9 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.sql.Connection;
 import java.sql.Date;
 
@@ -138,6 +140,26 @@ public class EmployeeDB {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	/**
+	 * Get Employee avg salary by gender
+	 * @return
+	 */
+	public Map<String, Double> getAvgSalaryByGender() {
+		String sql = "select gender, AVG(salary) as avgSalary from employee_payroll group by gender;";
+		Map<String, Double> genderToAvgSalaryMap = new HashMap<>();
+		try(Connection connection  = this.getConnection()){
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while(resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				double salary = resultSet.getDouble("avgSalary");
+				genderToAvgSalaryMap.put(gender, salary);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return genderToAvgSalaryMap;
 	}
 
 
