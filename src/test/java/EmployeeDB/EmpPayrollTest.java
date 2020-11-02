@@ -10,11 +10,22 @@ import EmployeeDB.EmployeePayrollService.IOService;
 
 public class EmpPayrollTest {
 	public static EmployeePayrollService test;
+	public static List<EmployeePayrollData> testData;
+	//UC2
 	@Test
 	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
 		test = new EmployeePayrollService();
-		List<EmployeePayrollData> testData = test.readEmployeePayrollData(IOService.DB_IO);
+	    testData = test.readEmployeePayrollData(IOService.DB_IO);
 		assertEquals(3, testData.size());
+	}
+	//UC3
+	@Test
+	public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncDatabase() {
+		test = new EmployeePayrollService();
+	    testData = test.readEmployeePayrollData(IOService.DB_IO);
+	    test.updateEmployeeSalary("Terisa", 3000000.00);
+	    boolean result = test.checkEmployeePayrollInSyncWithDBI("Terisa");
+		assertTrue(result);
 	}
 
 }

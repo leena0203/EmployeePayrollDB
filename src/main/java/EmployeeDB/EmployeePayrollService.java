@@ -8,11 +8,14 @@ public class EmployeePayrollService {
 	public enum IOService{CONSOLE_IO,FILE_IO,DB_IO,REST_IO}
 
 	List<EmployeePayrollData> employeePayrollList;
-
+	private static EmployeeDB employeeDB;
+public EmployeePayrollService() {
+	employeeDB = EmployeeDB.getInstance();
+}
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
+		this();
 		this.employeePayrollList = employeePayrollList;
 	}
-	public EmployeePayrollService() {}
 	static Scanner consoleInputReader = new Scanner(System.in);
 	public static void main(String[] args) {
 		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
@@ -27,6 +30,11 @@ public class EmployeePayrollService {
 		else if(ioService.equals(IOService.FILE_IO))
 			new EmployeePayrollFileIOservice().writeData(employeePayrollList);
 	}
+	/**
+	 * UC2
+	 * @param ioService
+	 * @return
+	 */
 	public List<EmployeePayrollData> readEmployeePayrollData(IOService ioService) {
 		if(ioService.equals(IOService.CONSOLE_IO)) {
 			System.out.println("Enter Employee Id: ");
@@ -40,10 +48,27 @@ public class EmployeePayrollService {
 			System.out.println("reading data from file.");
 			new EmployeePayrollFileIOservice().printData();
 		}else if (ioService.equals(IOService.DB_IO)) {
-			this.employeePayrollList = new EmployeeDB().readData();
+			this.employeePayrollList = employeeDB.readData();
 		}
 		return employeePayrollList;
-		
+
+	}
+	public boolean checkEmployeePayrollInSyncWithDBI(String name) {
+		List<EmployeePayrollData> list = employeeDB.getEmployeePayrollData(name);
+		return list.get(0).equals(getEmployeePayrollData(name));
+	}
+	public void updateEmployeeSalary(String name, double salary) {
+		int result = employeeDB.updateEmployeeData(name, salary);	
+		if (result ==0)return;
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null) employeePayrollData.salary = salary;
+	}
+
+	private EmployeePayrollData getEmployeePayrollData(String name) {
+		return this.employeePayrollList.stream()
+				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name))
+				.findFirst()
+				.orElse(null);
 	}
 	public long countEntries(IOService fileIo) {
 		long entries = 0;
@@ -57,5 +82,6 @@ public class EmployeePayrollService {
 			new EmployeePayrollFileIOservice().printData();
 		}
 	}
+	
 
 }
