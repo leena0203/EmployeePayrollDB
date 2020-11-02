@@ -102,6 +102,9 @@ public class EmployeePayrollService {
 	public Map<String, Double> readCountByGender() {
 		return employeeDB.getAggregateFunctions("COUNT");
 	}
+	public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
+		employeePayrollList.add(employeeDB.addEmployeeToPayroll(name, salary, start, gender));
+	}
 
 
 }

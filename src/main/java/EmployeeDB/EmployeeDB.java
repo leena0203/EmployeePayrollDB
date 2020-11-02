@@ -162,6 +162,32 @@ public class EmployeeDB {
 		}
 		return genderBasedFunctions;
 	}
+	/**
+	 * Insert new employee data into table
+	 * @param name
+	 * @param salary
+	 * @param start
+	 * @param gender
+	 * @return
+	 */
+	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
+		int id = -1;
+		EmployeePayrollData data = null;
+		String sql = String.format("INSERT INTO employee_payroll (name, gender, salary,start)"+
+				"VALUES( '%s', '%s', '%s', '%s')", name, gender, salary, Date.valueOf(start));
+		try(Connection connection  = this.getConnection()){
+			Statement statement = connection.createStatement();
+			int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+			if(rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if(resultSet.next()) id = resultSet.getInt(1);
+			}
+			data = new EmployeePayrollData(id, name, salary, start);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
 
 
 
