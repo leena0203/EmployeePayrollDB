@@ -142,24 +142,25 @@ public class EmployeeDB {
 		return list;
 	}
 	/**
-	 * Get Employee avg salary by gender
+	 * Get Employee aggregate functions
+	 * @param string 
 	 * @return
 	 */
-	public Map<String, Double> getAvgSalaryByGender() {
-		String sql = "select gender, AVG(salary) as avgSalary from employee_payroll group by gender;";
-		Map<String, Double> genderToAvgSalaryMap = new HashMap<>();
+	public Map<String, Double> getAggregateFunctions(String Function) {
+		String sql = String.format("select gender, %s(salary) from employee_payroll group by gender;",Function);
+		Map<String, Double> genderBasedFunctions = new HashMap<>();
 		try(Connection connection  = this.getConnection()){
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(sql);
 			while(resultSet.next()) {
-				String gender = resultSet.getString("gender");
-				double salary = resultSet.getDouble("avgSalary");
-				genderToAvgSalaryMap.put(gender, salary);
+				String gender = resultSet.getString(1);
+				double salary = resultSet.getDouble(2);
+				genderBasedFunctions.put(gender, salary);
 			}
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return genderToAvgSalaryMap;
+		return genderBasedFunctions;
 	}
 
 

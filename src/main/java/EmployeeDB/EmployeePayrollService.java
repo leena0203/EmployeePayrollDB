@@ -88,7 +88,19 @@ public class EmployeePayrollService {
 			return employeeDB.getEmployeeForDateRange(start, end);
 	}
 	public Map<String, Double> readAvgSalaryByGender() {
-		return employeeDB.getAvgSalaryByGender();
+		return employeeDB.getAggregateFunctions("AVG");
+	}
+	public Map<String, Double> readMinSalaryByGender() {
+		return employeeDB.getAggregateFunctions("MIN");
+	}
+	public Map<String, Double> readMaxSalaryByGender() {
+		return employeeDB.getAggregateFunctions("MAX");
+	}
+	public Map<String, Double> readSumByGender() {
+		return employeeDB.getAggregateFunctions("SUM");
+	}
+	public Map<String, Double> readCountByGender() {
+		return employeeDB.getAggregateFunctions("COUNT");
 	}
 
 
