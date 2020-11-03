@@ -188,6 +188,14 @@ public class EmployeeDB {
 		}
 		return data;
 	}
+	/**
+	 * Insert Employee
+	 * @param name
+	 * @param salary
+	 * @param start
+	 * @param gender
+	 * @return
+	 */
 	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate start, 
 			String gender) {
 		int id = -1;
@@ -249,8 +257,28 @@ public class EmployeeDB {
 				}
 		}
 		return data;
+	}
 
+	public EmployeePayrollData addEmployeeToDepartment(String name, double salary, LocalDate start, String gender,
+			String department) {
+		int id = -1;
+		EmployeePayrollData data = null;
+		String sql = String.format("INSERT INTO employee_payroll (name, gender, salary,start, department)"+
+				"VALUES( '%s', '%s', '%s', '%s', '%s')", name, gender, salary, Date.valueOf(start), department);
+		try(Connection connection  = this.getConnection()){
+			Statement statement = connection.createStatement();
+			int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+			if(rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if(resultSet.next()) id = resultSet.getInt(1);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return data;
 	}
 }
+
+
 
 

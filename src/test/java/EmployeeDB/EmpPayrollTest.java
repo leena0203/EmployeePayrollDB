@@ -70,12 +70,19 @@ public class EmpPayrollTest {
 //	    assertTrue(genderBasedFunctions.get("M").equals(2.0));
 //	    assertTrue(genderBasedFunctions.get("F").equals(1.0));
 //	}
-	//UC7
+	//UC7 and //UC8
 	@Test
 	public void givenPayrollData_WhenAddedNewEntry_ShouldSyncWithDB() {
 	    test.addEmployeeToPayroll("Leena", 6000000.00, LocalDate.now(), "F");
 	    boolean result = test.checkEmployeePayrollInSyncWithDBI("Leena");
 	    assertTrue(result);
 	    System.out.println();
+	}
+	//UC9
+	@Test
+	public void givenNewEmployee_WhenAddedToPayroll_ShouldBeAddedToDepartment() {
+		test.addEmployeeToDepartment("Dev",9000000.0, LocalDate.now(), "M", "Marketing");
+		boolean result = test.checkEmployeePayrollInSyncWithDBI("Dev");
+		assertEquals(true, result);
 	}
 }

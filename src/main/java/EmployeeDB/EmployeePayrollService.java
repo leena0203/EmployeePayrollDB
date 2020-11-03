@@ -105,6 +105,9 @@ public class EmployeePayrollService {
 	public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
 		employeePayrollList.add(employeeDB.addEmployeeToPayroll(name, salary, start, gender));
 	}
+	public void addEmployeeToDepartment(String name, double salary, LocalDate start, String gender, String department) {
+		employeePayrollList.add(employeeDB.addEmployeeToDepartment(name, salary, start, gender, department));
+	}
 
 
 }
