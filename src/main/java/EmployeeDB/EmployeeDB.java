@@ -189,12 +189,13 @@ public class EmployeeDB {
 		return data;
 	}
 	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate start, 
-			                                        String gender) {
+			String gender) {
 		int id = -1;
 		EmployeePayrollData data = null;
 		Connection connection = null;
 		try{
-		 connection  = this.getConnection();
+			connection  = this.getConnection();
+			connection.setAutoCommit(false);
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -209,6 +210,12 @@ public class EmployeeDB {
 			data = new EmployeePayrollData(id, name, salary, start);
 		}catch (SQLException e) {
 			e.printStackTrace();
+			try {
+				connection.rollback();
+				return data;
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 		try(Statement statement = connection.createStatement()){
 			double deductions = salary * 0.2;
@@ -221,20 +228,29 @@ public class EmployeeDB {
 			if(rowAffected == 1) {
 				data = new EmployeePayrollData(id, name, salary, start);
 			}
-			}catch (SQLException e) {
-				e.printStackTrace();
-			}finally{
-				if (connection != null)
-					try {
-						connection.close();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+		}catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
-		return data;
-	
 		}
+		try {
+			connection.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			if (connection != null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return data;
+
 	}
+}
 
 
