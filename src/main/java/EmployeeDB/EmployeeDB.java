@@ -375,6 +375,20 @@ public class EmployeeDB {
 		}
 		return data;
 	}
+	/**
+	 * Remove employee from payroll
+	 * @param id
+	 * @return
+	 */
+	public List<EmployeePayrollData> removeEmployeeFromPayroll(int id) {
+		List<EmployeePayrollData> listOfEmployees = this.readData();
+		listOfEmployees.forEach(employee -> {
+			if (employee.id == id) {
+				employee.is_active = false;
+			}
+		});
+		return listOfEmployees;
+	}
 	
 }
 

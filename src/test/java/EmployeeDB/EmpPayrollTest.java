@@ -96,4 +96,10 @@ public class EmpPayrollTest {
 		boolean result = test.checkEmployeePayrollInSyncWithDBI("Peter");
 		assertEquals(true, result);
 	}
+	//UC12
+	@Test
+	public void givenEmployeeID_WhenRemoved_ShouldMatchEmployeeCountForActiveMember() {
+		List<EmployeePayrollData> onlyActiveList = test.removeEmployeeFromPayroll(3);
+		assertEquals(3, onlyActiveList.size());
+	}
 }

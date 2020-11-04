@@ -163,4 +163,14 @@ public class EmployeePayrollService {
 		this.employeePayrollList.add(employeeDB.addEmployeeToPayrollAndDepartment(name,salary, start,department, gender));
 		
 	}
+	/**
+	 * Remove employee from payroll
+	 * @param id
+	 * @return
+	 */
+	public List<EmployeePayrollData> removeEmployeeFromPayroll(int id) {
+		List<EmployeePayrollData> activeList = null;
+		activeList = employeeDB.removeEmployeeFromPayroll(id);
+		return activeList;
+	}
 }
