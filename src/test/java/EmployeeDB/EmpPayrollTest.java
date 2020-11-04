@@ -89,9 +89,10 @@ public class EmpPayrollTest {
 	}
 	
 	//UC9
+	//UC11
 	@Test
 	public void givenNewEmployee_WhenAddedToPayroll_ShouldBeAddedToDepartment() {
-		test.addEmployeeToDepartment("Peter",5000000.0, LocalDate.now(), "M", "Marketing");
+		test.addEmployeeToPayrollAndDepartment("Peter",5000000.0, LocalDate.now(), "M", "Marketing");
 		boolean result = test.checkEmployeePayrollInSyncWithDBI("Peter");
 		assertEquals(true, result);
 	}

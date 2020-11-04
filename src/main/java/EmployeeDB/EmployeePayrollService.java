@@ -150,4 +150,17 @@ public class EmployeePayrollService {
 		return readEmployeePayrollData(IOService.DB_IO);
 		
 	}
+	/**
+	 * add employee to department and payroll
+	 * @param name
+	 * @param salary
+	 * @param start
+	 * @param gender
+	 * @param department
+	 */
+	public void addEmployeeToPayrollAndDepartment(String name, double salary, LocalDate start, String gender,
+			String department) {
+		this.employeePayrollList.add(employeeDB.addEmployeeToPayrollAndDepartment(name,salary, start,department, gender));
+		
+	}
 }
