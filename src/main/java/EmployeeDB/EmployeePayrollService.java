@@ -9,7 +9,8 @@ import java.util.Scanner;
 public class EmployeePayrollService {
 	public enum IOService{CONSOLE_IO,FILE_IO,DB_IO,REST_IO}
 
-	List<EmployeePayrollData> employeePayrollList;
+	//List<EmployeePayrollData> employeePayrollList;
+	List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
 	private static EmployeeDB employeeDB;
 	public EmployeePayrollService() {
 		employeeDB = EmployeeDB.getInstance();
@@ -26,6 +27,18 @@ public class EmployeePayrollService {
 		employeePayrollService.readEmployeePayrollData(IOService.FILE_IO);
 		employeePayrollService.writeEmployeePayrollData(IOService.CONSOLE_IO);
 	}
+	public long countEntries(IOService fileIo) {
+		long entries = 0;
+		if (fileIo.equals(IOService.FILE_IO)) {
+			entries = new EmployeePayrollFileIOservice().countEntries();
+		}
+		return entries;
+	}
+	public void printData(IOService fileIo) {
+		if (fileIo.equals(IOService.FILE_IO)) {
+			new EmployeePayrollFileIOservice().printData();
+		}
+	}
 	public void writeEmployeePayrollData(IOService ioService) {
 		if (ioService.equals(IOService.CONSOLE_IO))
 			System.out.println("Writing Employee Payroll Roaster to console\n " +employeePayrollList);// TODO Auto-generated method stub
@@ -33,7 +46,7 @@ public class EmployeePayrollService {
 			new EmployeePayrollFileIOservice().writeData(employeePayrollList);
 	}
 	/**
-	 * UC2
+	 * UC2_Read employee_payroll data fom DB_IO File
 	 * @param ioService
 	 * @return
 	 */
@@ -55,38 +68,47 @@ public class EmployeePayrollService {
 		return employeePayrollList;
 
 	}
-	public boolean checkEmployeePayrollInSyncWithDBI(String name) {
-		List<EmployeePayrollData> list = employeeDB.getEmployeePayrollData(name);
-		return list.get(0).equals(getEmployeePayrollData(name));
-	}
+	/**
+	 * UC3,UC4
+	 * Update employee_payroll salary
+	 * @param name
+	 * @param salary
+	 */
 	public void updateEmployeeSalary(String name, double salary) {
 		int result = employeeDB.updateEmployeeData(name, salary);	
 		if (result ==0)return;
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
 		if (employeePayrollData != null) employeePayrollData.salary = salary;
 	}
-
+	/**
+	 * get employee_payroll data using stream
+	 * @param name
+	 * @return
+	 */
 	private EmployeePayrollData getEmployeePayrollData(String name) {
 		return this.employeePayrollList.stream()
 				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name))
 				.findFirst()
 				.orElse(null);
 	}
-	public long countEntries(IOService fileIo) {
-		long entries = 0;
-		if (fileIo.equals(IOService.FILE_IO)) {
-			entries = new EmployeePayrollFileIOservice().countEntries();
-		}
-		return entries;
+	public boolean checkEmployeePayrollInSyncWithDBI(String name) {
+		List<EmployeePayrollData> list = employeeDB.getEmployeePayrollData(name);
+		return list.get(0).equals(getEmployeePayrollData(name));
 	}
-	public void printData(IOService fileIo) {
-		if (fileIo.equals(IOService.FILE_IO)) {
-			new EmployeePayrollFileIOservice().printData();
-		}
-	}
+
+	/**
+	 * Read employee_payroll data for date range
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public List<EmployeePayrollData> readEmployeePayrollForDateRange(LocalDate start, LocalDate end) {
-			return employeeDB.getEmployeeForDateRange(start, end);
+		return employeeDB.getEmployeeForDateRange(start, end);
 	}
+	/**
+	 * Aggregate Functions
+	 * @return
+	 */
 	public Map<String, Double> readAvgSalaryByGender() {
 		return employeeDB.getAggregateFunctions("AVG");
 	}
@@ -102,12 +124,30 @@ public class EmployeePayrollService {
 	public Map<String, Double> readCountByGender() {
 		return employeeDB.getAggregateFunctions("COUNT");
 	}
+	/**
+	 * Add new employee to table
+	 * @param name
+	 * @param salary
+	 * @param start
+	 * @param gender
+	 */
 	public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
-		employeePayrollList.add(employeeDB.addEmployeeToPayroll(name, salary, start, gender));
+		employeePayrollList.add(employeeDB.addEmployeeToPayrollUC7(name, salary, start, gender));
 	}
+	/**
+	 * add employee to department
+	 * @param name
+	 * @param salary
+	 * @param start
+	 * @param gender
+	 * @param department
+	 */
 	public void addEmployeeToDepartment(String name, double salary, LocalDate start, String gender, String department) {
 		employeePayrollList.add(employeeDB.addEmployeeToDepartment(name, salary, start, gender, department));
 	}
-
-
+	public List<EmployeePayrollData> deleteEmployee(String name) {
+		employeeDB.deleteEmployee(name);
+		return readEmployeePayrollData(IOService.DB_IO);
+		
+	}
 }

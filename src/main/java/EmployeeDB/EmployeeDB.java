@@ -44,27 +44,11 @@ public class EmployeeDB {
 			System.out.println("  " + driverClass.getClass().getName());
 		}
 	}
-
-
-	public List<EmployeePayrollData> readData()  {
-		String sql = "SELECT * FROM employee_payroll;";
-		return this.getEmployeePayrollDataUsingDB(sql);
-	}
-
-	public List<EmployeePayrollData> getEmployeePayrollData(String name) {
-		List<EmployeePayrollData> list = null;
-		if(this.employeePayrollDataStatement == null)
-			this.prepareStatementForEmployeeData();
-		try {
-			employeePayrollDataStatement.setString(1, name);
-			ResultSet resultSet = employeePayrollDataStatement.executeQuery();
-			list = this.getEmployeePayrollData(resultSet);
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-
+	/**
+	 * Employee payroll data
+	 * @param result
+	 * @return
+	 */
 	private List<EmployeePayrollData> getEmployeePayrollData(ResultSet result) {
 		List<EmployeePayrollData> list = new ArrayList<>();
 		try {
@@ -80,53 +64,8 @@ public class EmployeeDB {
 		}
 		return list;
 	}
-	private void prepareStatementForEmployeeData() {
-		try {
-			Connection connection = this.getConnection();
-			String sql = "SELECT * FROM employee_payroll WHERE name = ?";
-			employeePayrollDataStatement = connection.prepareStatement(sql);
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	public int updateEmployeeData(String name, double salary) {
-		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
-	}
-	private int updateEmployeeDataUsingStatement(String name, double salary) {
-		String sql = String.format("update employee_payroll set salary = %.2f  where name = '%s';", salary, name);
-		try(Connection connection  = this.getConnection()){
-			Statement statement = connection.createStatement();
-			return statement.executeUpdate(sql);
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
-	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) {
-		try (Connection connection = this.getConnection()) {
-			String sql = "Update employee_payroll set salary = ? where name = ? ; " ; 
-			PreparedStatement prepareStatement = (PreparedStatement) connection.prepareStatement(sql);
-			prepareStatement.setDouble(1, salary);
-			prepareStatement.setString(2, name);
-			return prepareStatement.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
 	/**
-	 * UC5_Update data between date range
-	 * @param start
-	 * @param end
-	 * @return
-	 */
-	public List<EmployeePayrollData> getEmployeeForDateRange(LocalDate start, LocalDate end) {
-		String sql = String.format("SELECT * FROM employee_payroll WHERE START BETWEEN '%s' AND '%s';",
-				Date.valueOf(start), Date.valueOf(end));
-		return this.getEmployeePayrollDataUsingDB(sql);
-	}
-	/**
-	 * get Employee payroll data
+	 * get Employee payroll data Using DB
 	 * @param sql
 	 * @return
 	 */
@@ -140,6 +79,126 @@ public class EmployeeDB {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	/**
+	 * UC2,UC10: Read employee data
+	 * @return
+	 */
+	public List<EmployeePayrollData> readData() {
+		String sql = "Select employee_payroll.id,name,gender,salary,start,department.department from employee_payroll "
+				+ "inner join department on employee_payroll.id = department.id; ";
+		return this.getEmployeePayrollAndDeparmentData(sql);
+	}
+	/**
+	 * Update employee payroll data
+	 * @param name
+	 * @param salary
+	 * @return
+	 */
+	public int updateEmployeeData(String name, double salary) {
+		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
+	}
+	/**
+	 * update using statement
+	 * @param name
+	 * @param salary
+	 * @return
+	 */
+	private int updateEmployeeDataUsingStatement(String name, double salary) {
+		String sql = String.format("update employee_payroll set salary = %.2f  where name = '%s';", salary, name);
+		try(Connection connection  = this.getConnection()){
+			Statement statement = connection.createStatement();
+			return statement.executeUpdate(sql);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	/**
+	 * get data to sync with DB
+	 * @param name
+	 * @return
+	 */
+	public List<EmployeePayrollData> getEmployeePayrollData(String name) {
+		List<EmployeePayrollData> list = null;
+		if(this.employeePayrollDataStatement == null)
+			this.prepareStatementForEmployeeData();
+		try {
+			employeePayrollDataStatement.setString(1, name);
+			ResultSet resultSet = employeePayrollDataStatement.executeQuery();
+			list = this.getEmployeePayrollData(resultSet);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	/**
+	 * prepared statement
+	 */
+	private void prepareStatementForEmployeeData() {
+		try {
+			Connection connection = this.getConnection();
+			String sql = "SELECT * FROM employee_payroll WHERE name = ?";
+			employeePayrollDataStatement = connection.prepareStatement(sql);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * update data using prepared statement
+	 * @param name
+	 * @param salary
+	 * @return
+	 */
+	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) {
+		try (Connection connection = this.getConnection()) {
+			String sql = "Update employee_payroll set salary = ? where name = ? ; " ; 
+			PreparedStatement prepareStatement = (PreparedStatement) connection.prepareStatement(sql);
+			prepareStatement.setDouble(1, salary);
+			prepareStatement.setString(2, name);
+			return prepareStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	/**
+	 * UC5_Update data between date range
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public List<EmployeePayrollData> getEmployeeForDateRange(LocalDate start, LocalDate end) {
+		String sql = String.format("Select emplpyee_payroll.id,name,gender,salary,start,department.department from employee_payroll "
+				+ "inner join department on employee_payroll.id = department.id where start between '%s' and '%s' ;",
+				Date.valueOf(start), Date.valueOf(end));
+		return this.getEmployeePayrollAndDeparmentData(sql);
+	}
+	/**
+	 * UC10_New Table
+	 * @param sql
+	 * @return
+	 */
+	private List<EmployeePayrollData> getEmployeePayrollAndDeparmentData(String sql) {
+		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				int id = resultSet.getInt("id");
+				String name = resultSet.getString("name");
+				double salary = resultSet.getDouble("salary");
+				LocalDate start = resultSet.getDate("start").toLocalDate();
+				String department = resultSet.getString("department");
+				employeePayrollList.add(new EmployeePayrollData(id, name, salary, start,department));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollList;		
 	}
 	/**
 	 * Get Employee aggregate functions
@@ -162,6 +221,7 @@ public class EmployeeDB {
 		}
 		return genderBasedFunctions;
 	}
+
 	/**
 	 * Insert new employee data into table
 	 * @param name
@@ -258,7 +318,32 @@ public class EmployeeDB {
 		}
 		return data;
 	}
+	/**UC8
+	 * dELETE EMPLOYEE(CASCADING)
+	 * @param name
+	 * @throws DatabaseException
+	 */
+	public void deleteEmployee(String name) {
+		String sql = String.format("DELETE from employee_payroll_service where name = '%s';", name);
+		try {
+			Connection connection = this.getConnection();
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+	}
 
+	/**
+	 * UC9
+	 * add employee to department
+	 * @param name
+	 * @param salary
+	 * @param start
+	 * @param gender
+	 * @param department
+	 * @return
+	 */
 	public EmployeePayrollData addEmployeeToDepartment(String name, double salary, LocalDate start, String gender,
 			String department) {
 		int id = -1;
@@ -272,6 +357,7 @@ public class EmployeeDB {
 				ResultSet resultSet = statement.getGeneratedKeys();
 				if(resultSet.next()) id = resultSet.getInt(1);
 			}
+			data = new EmployeePayrollData(id, name, salary, start);
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
