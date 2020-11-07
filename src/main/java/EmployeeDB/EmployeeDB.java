@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.Date;
 
 public class EmployeeDB {
+	private int connectionCounter = 0;
 	private PreparedStatement employeePayrollDataStatement;
 	private static EmployeeDB employeeDB;
 	private EmployeeDB() {
@@ -25,16 +26,24 @@ public class EmployeeDB {
 			employeeDB = new EmployeeDB();
 		return employeeDB;
 	}
-	private Connection getConnection() throws SQLException{
+		private synchronized Connection getConnection() throws SQLException {
+			connectionCounter++;
 		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
 		String userName = "root";
 		String password = "Sql@2020sql";
-		Connection connection;
-		System.out.println("Connecting to database:"+jdbcURL);
-		connection = DriverManager.getConnection(jdbcURL, userName, password);
-		System.out.println("Connection is successful: " + connection);
+		Connection connection = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Processing Thread: "+Thread.currentThread().getName()+
+                               " Connecting to database with Id: "+connectionCounter);
+			connection = DriverManager.getConnection(jdbcURL, userName, password);
+			System.out.println("Processing Thread: "+Thread.currentThread().getName()+
+                               " Connecting to database with Id: "+connectionCounter+" Connection is successfull!!"+connection);
+		} catch (Exception e) {
+			throw new SQLException("Connection was unsuccessful");
+		}
 		return connection;
-	}
+		}
 
 
 	private static void listDrivers() {
