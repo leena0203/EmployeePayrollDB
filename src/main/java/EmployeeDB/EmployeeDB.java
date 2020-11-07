@@ -12,10 +12,15 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.Date;
 
 public class EmployeeDB {
+	private static final Logger LOG = LogManager.getLogger(EmployeeDB.class); 
 	private int connectionCounter = 0;
 	private PreparedStatement employeePayrollDataStatement;
 	private static EmployeeDB employeeDB;

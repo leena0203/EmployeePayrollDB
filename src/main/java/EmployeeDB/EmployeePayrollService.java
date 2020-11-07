@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class EmployeePayrollService {
+	private static final Logger LOG = LogManager.getLogger(EmployeeDB.class); 
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
@@ -194,7 +198,7 @@ public class EmployeePayrollService {
 	public void addEmployeeToPayrollAndDepartment(String name, double salary, LocalDate start, String gender,
 			List<String> department) throws SQLException {
 		this.employeePayrollList
-		.add(employeeDB.addEmployeeToPayrollAndDepartment(name, salary, start, gender, department));
+				.add(employeeDB.addEmployeeToPayrollAndDepartment(name, salary, start, gender, department));
 
 	}
 
@@ -228,8 +232,10 @@ public class EmployeePayrollService {
 		});
 		// System.out.println(this.employeeList);
 	}
+
 	/**
 	 * add multiple contacts using threads
+	 * 
 	 * @param employeeList
 	 */
 	public void addEmployeesToPayrollWithThreads(List<EmployeePayrollData> employeeList) {
@@ -257,5 +263,49 @@ public class EmployeePayrollService {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void updatePayroll(Map<String, Double> salaryMap) throws SQLException{
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
+		salaryMap.forEach((k, v) -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(k.hashCode(), false);
+				LOG.info("Employee Being Added: " + Thread.currentThread().getName());
+				this.updatePayrollDB(k, v);
+				employeeAdditionStatus.put(k.hashCode(), true);
+				LOG.info("Employee Added: " + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, k);
+			thread.start();
+		});
+		while (employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void updatePayrollDB(String name, Double salary) {
+		int result = employeeDB.updateEmployeeData(name, salary);
+		if (result == 0)
+			return;
+		EmployeePayrollData employee = this.getEmployeePayrollData(name);
+		if (employee != null)
+			employee.salary = salary;
+	}
+
+	public boolean checkEmployeeListSync(List<String> asList) throws SQLException {
+		List<Boolean> resultList = new ArrayList<>();
+		asList.forEach(name -> {
+			List<EmployeePayrollData> employeeList;
+			employeeList = employeeDB.getEmployeePayrollData(name);
+			resultList.add(employeeList.get(0).equals(getEmployeePayrollData(name)));
+		});
+		if(resultList.contains(false)){
+			return false;
+		}
+		return true;
 	}
 }
