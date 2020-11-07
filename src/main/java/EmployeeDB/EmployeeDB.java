@@ -257,7 +257,7 @@ public class EmployeeDB {
 	 * @return
 	 */
 	public EmployeePayrollData addEmployeeToPayrollAndDepartment(String name, double salary, LocalDate start, 
-			String gender, String department) {
+			String gender, List<String> department) {
 		int id = -1;
 		EmployeePayrollData data = null;
 		Connection connection = null;
@@ -307,7 +307,7 @@ public class EmployeeDB {
 					id,department);
 			int rowAffected = statement.executeUpdate(sql);
 			if(rowAffected == 1) {
-				data = new EmployeePayrollData(id,name, salary,start,gender, department);
+				data = new EmployeePayrollData(id,name, salary,gender,start, department);
 			}
 		} catch (SQLException e) {
 			try {
@@ -389,6 +389,7 @@ public class EmployeeDB {
 		});
 		return listOfEmployees;
 	}
+	
 	
 }
 

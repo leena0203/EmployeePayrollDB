@@ -1,5 +1,6 @@
 package EmployeeDB;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,12 +156,11 @@ public class EmployeePayrollService {
 	 * @param name
 	 * @param salary
 	 * @param start
-	 * @param gender
+	 * @param department2
 	 * @param department
 	 */
-	public void addEmployeeToPayrollAndDepartment(String name, double salary, LocalDate start, String gender,
-			String department) {
-		this.employeePayrollList.add(employeeDB.addEmployeeToPayrollAndDepartment(name,salary, start,department, gender));
+	public void addEmployeeToPayrollAndDepartment(String name, double salary, LocalDate start,String gender, List<String> department)throws SQLException {
+		this.employeePayrollList.add(employeeDB.addEmployeeToPayrollAndDepartment(name,salary, start, gender, department));
 		
 	}
 	/**
@@ -172,5 +172,21 @@ public class EmployeePayrollService {
 		List<EmployeePayrollData> activeList = null;
 		activeList = employeeDB.removeEmployeeFromPayroll(id);
 		return activeList;
+	}
+	/**
+	 * ADD Multiple contacts without thread
+	 * @param employeeList
+	 */
+	public void addEmployeesToPayroll(List<EmployeePayrollData> employeeList) {
+		employeeList.forEach(employee -> {
+//			System.out.println("Employee Being added: "+employee.name);
+			try {
+				this.addEmployeeToPayrollAndDepartment(employee.name,employee.salary,employee.start,employee.gender,employee.department);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+//			System.out.println("Employee added: "+employee.name);
+		});
+//		System.out.println(this.employeeList);
 	}
 }

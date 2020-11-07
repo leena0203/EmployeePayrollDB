@@ -1,14 +1,15 @@
 package EmployeeDB;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class EmployeePayrollData {
 	public int id;
 	public String name;
 	public double salary;
 	public LocalDate start;
-	public String department;
-	private String gender;
+	public List<String> department;
+	String gender;
 	public boolean is_active;
 	public EmployeePayrollData(int id, String name, double salary) {
 		this.id = id;
@@ -23,9 +24,10 @@ public class EmployeePayrollData {
 		this(id, name, salary, start);
 		this.gender = gender;
 	}
-	public EmployeePayrollData(int id, String name, double salary, LocalDate start, String department, String gender) {
+	
+	public EmployeePayrollData(int id, String name, double salary, String gender, LocalDate start, List<String> department) {
 		this(id, name, salary, start, gender);
-		this.department = department;
+		this.department= department;
 	}
 	
 	public String toString(){
