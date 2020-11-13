@@ -198,7 +198,7 @@ public class EmployeePayrollService {
 	public void addEmployeeToPayrollAndDepartment(String name, double salary, LocalDate start, String gender,
 			List<String> department) throws SQLException {
 		this.employeePayrollList
-				.add(employeeDB.addEmployeeToPayrollAndDepartment(name, salary, start, gender, department));
+		.add(employeeDB.addEmployeeToPayrollAndDepartment(name, salary, start, gender, department));
 
 	}
 
@@ -307,5 +307,9 @@ public class EmployeePayrollService {
 			return false;
 		}
 		return true;
+	}
+
+	public void addEmployeesToPayroll(EmployeePayrollData employee) {
+		employeePayrollList.add(employee);		
 	}
 }
