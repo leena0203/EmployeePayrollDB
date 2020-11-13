@@ -11,6 +11,8 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import EmployeeDB.EmployeePayrollService.IOService;
+
 public class EmployeePayrollService {
 	private static final Logger LOG = LogManager.getLogger(EmployeeDB.class); 
 	public enum IOService {
@@ -109,7 +111,7 @@ public class EmployeePayrollService {
 	 * @param name
 	 * @return
 	 */
-	private EmployeePayrollData getEmployeePayrollData(String name) {
+	public EmployeePayrollData getEmployeePayrollData(String name) {
 		return this.employeePayrollList.stream()
 				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name)).findFirst().orElse(null);
 	}
@@ -265,13 +267,13 @@ public class EmployeePayrollService {
 		}
 	}
 
-	public void updatePayroll(Map<String, Double> salaryMap) throws SQLException{
+	public void updatePayroll(Map<String, Double> salaryMap, IOService ioService) throws SQLException{
 		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
 		salaryMap.forEach((k, v) -> {
 			Runnable task = () -> {
 				employeeAdditionStatus.put(k.hashCode(), false);
 				LOG.info("Employee Being Added: " + Thread.currentThread().getName());
-				this.updatePayrollDB(k, v);
+				this.updatePayrollDB(k, v, ioService);
 				employeeAdditionStatus.put(k.hashCode(), true);
 				LOG.info("Employee Added: " + Thread.currentThread().getName());
 			};
@@ -287,7 +289,7 @@ public class EmployeePayrollService {
 		}
 	}
 
-	private void updatePayrollDB(String name, Double salary) {
+	public void updatePayrollDB(String name, Double salary, IOService restIo) {
 		int result = employeeDB.updateEmployeeData(name, salary);
 		if (result == 0)
 			return;

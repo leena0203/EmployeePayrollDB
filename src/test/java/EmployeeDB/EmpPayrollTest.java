@@ -217,5 +217,19 @@ public class EmpPayrollTest {
 		long count = eService.countEntries(IOService.REST_IO);
 		assertEquals(9, count);
 	}
+	@Test 
+	public void givenNewSalaryForEmployee_WhenUpdated_ShouldMatch200Request() throws  SQLException {
+		EmployeePayrollData[] arrayOfEmp = getEmployeeList();
+		EmployeePayrollService eService = new EmployeePayrollService(Arrays.asList(arrayOfEmp));
+		eService.updatePayrollDB("Mukesh Ambani",8000000.0,IOService.REST_IO);
+		EmployeePayrollData employee = eService.getEmployeePayrollData("Mukesh Ambani");
+		String empJson = new Gson().toJson(employee);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type","application/json");
+		request.body(empJson);
+		Response response = request.put("/EmployeePayrollData/"+employee.id);
+		int statusCode = response.getStatusCode();
+		assertEquals(200,statusCode);			
+	}
 	
 }
