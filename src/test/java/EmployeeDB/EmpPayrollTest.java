@@ -176,18 +176,46 @@ public class EmpPayrollTest {
 		return request.post("/EmployeePayrollData");
 	}
 	
-	@Test 
-	public void givenNewEmployee_WhenAdded_ShouldMatch201ResponseAndCount() {
+//	@Test 
+//	public void givenNewEmployee_WhenAdded_ShouldMatch201ResponseAndCount() {
+//		EmployeePayrollData[] arrayOfEmp = getEmployeeList();
+//		EmployeePayrollService eService = new EmployeePayrollService(Arrays.asList(arrayOfEmp));
+//		EmployeePayrollData employee = null; 
+//		employee = new EmployeePayrollData(0,"Mark Zuckerberg",3000000.0,LocalDate.now(),"M");
+//		Response response = addEmployeeToJsonServer(employee);
+//		int statusCode = response.getStatusCode();
+//		assertEquals(201,statusCode);
+//		employee = new Gson().fromJson(response.asString(), EmployeePayrollData.class);
+//		eService.addEmployeesToPayroll(employee);
+//		long count = eService.countEntries(IOService.REST_IO);
+//		assertEquals(3,count);	
+//	}
+	@Test
+	public void givenListOfNewEmployee_WhenAdded_ShouldMatch201ResponseAndCount() {
 		EmployeePayrollData[] arrayOfEmp = getEmployeeList();
 		EmployeePayrollService eService = new EmployeePayrollService(Arrays.asList(arrayOfEmp));
-		EmployeePayrollData employee = null; 
-		employee = new EmployeePayrollData(0,"Mark Zuckerberg",3000000.0,LocalDate.now(),"M");
-		Response response = addEmployeeToJsonServer(employee);
-		int statusCode = response.getStatusCode();
-		assertEquals(201,statusCode);
-		employee = new Gson().fromJson(response.asString(), EmployeePayrollData.class);
-		eService.addEmployeesToPayroll(employee);
+		EmployeePayrollData[] arrayOfEmployee = { new EmployeePayrollData(0, "Larry", 6000000.0, LocalDate.now(), "M"),
+				new EmployeePayrollData(0, "Steve", 7000000.0, LocalDate.now(), "M"),
+				new EmployeePayrollData(0, "Ross", 5000000.0, LocalDate.now(), "M") };
+		List<EmployeePayrollData> employeeList = Arrays.asList(arrayOfEmployee);
+		employeeList.forEach(employee -> {
+			Runnable task = () -> {
+				Response response = addEmployeeToJsonServer(employee);
+				int statusCode = response.getStatusCode();
+				assertEquals(201, statusCode);
+				EmployeePayrollData newEmployee = new Gson().fromJson(response.asString(), EmployeePayrollData.class);
+				eService.addEmployeesToPayroll(newEmployee);
+			};
+			Thread thread = new Thread(task, employee.name);
+			thread.start();
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
 		long count = eService.countEntries(IOService.REST_IO);
-		assertEquals(3,count);	
+		assertEquals(9, count);
 	}
+	
 }
