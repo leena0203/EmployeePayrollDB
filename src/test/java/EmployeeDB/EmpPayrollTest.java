@@ -239,5 +239,19 @@ public class EmpPayrollTest {
 		assertEquals(9,entries);
 		
 	}
+	@Test 
+	public void givenEmployeeToDelete_WhenDeleted_ShouldMatch200ResponseAndCount() throws SQLException {
+		EmployeePayrollData[] arrayOfEmp = getEmployeeList();
+		EmployeePayrollService eService = new EmployeePayrollService(Arrays.asList(arrayOfEmp));
+		EmployeePayrollData employee = eService.getEmployeePayrollData("Mukesh Ambani");
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type","application/json");
+		Response response = request.delete("/EmployeePayrollData/"+employee.id);
+		int statusCode = response.getStatusCode();
+		assertEquals(200,statusCode);
+		eService.deleteEmployee(employee.name, IOService.REST_IO);
+		long count = eService.countEntries(IOService.REST_IO);
+		assertEquals(7,count);
+	}
 	
 }

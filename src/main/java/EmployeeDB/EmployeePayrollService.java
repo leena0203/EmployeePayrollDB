@@ -310,10 +310,26 @@ public class EmployeePayrollService {
 		}
 		return true;
 	}
-
+	/**
+	 * add employee to json file
+	 * @param employee
+	 */
 	public void addEmployeesToPayroll(EmployeePayrollData employee) {
 		employeePayrollList.add(employee);		
 	}
+	/**
+	 * delete employee from json file
+	 * @param name
+	 * @param ioService
+	 */
+	public void deleteEmployee(String name, IOService ioService) {
+		if(ioService.equals(IOService.REST_IO)) {
+			EmployeePayrollData employee = this.getEmployeePayrollData(name);
+			employeePayrollList.remove(employee);
+		}
+	}
 
-	
 }
+
+
+
