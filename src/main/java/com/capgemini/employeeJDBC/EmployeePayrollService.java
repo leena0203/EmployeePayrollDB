@@ -1,4 +1,4 @@
-package EmployeeDB;
+package com.capgemini.employeeJDBC;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import EmployeeDB.EmployeePayrollService.IOService;
+import com.capgemini.employeeJDBC.EmployeePayrollService.IOService;
 
 public class EmployeePayrollService {
 	private static final Logger LOG = LogManager.getLogger(EmployeeDB.class); 
@@ -267,13 +267,13 @@ public class EmployeePayrollService {
 		}
 	}
 
-	public void updatePayroll(Map<String, Double> salaryMap, IOService ioService) throws SQLException{
+	public void updatePayroll(Map<String, Double> salaryMap) throws SQLException{
 		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
 		salaryMap.forEach((k, v) -> {
 			Runnable task = () -> {
 				employeeAdditionStatus.put(k.hashCode(), false);
 				LOG.info("Employee Being Added: " + Thread.currentThread().getName());
-				this.updatePayrollDB(k, v, ioService);
+				this.updatePayrollDB(k, v);
 				employeeAdditionStatus.put(k.hashCode(), true);
 				LOG.info("Employee Added: " + Thread.currentThread().getName());
 			};
@@ -289,7 +289,7 @@ public class EmployeePayrollService {
 		}
 	}
 
-	public void updatePayrollDB(String name, Double salary, IOService restIo) {
+	public void updatePayrollDB(String name, Double salary) {
 		int result = employeeDB.updateEmployeeData(name, salary);
 		if (result == 0)
 			return;
@@ -328,7 +328,6 @@ public class EmployeePayrollService {
 			employeePayrollList.remove(employee);
 		}
 	}
-
 }
 
 

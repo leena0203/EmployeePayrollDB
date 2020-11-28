@@ -1,4 +1,4 @@
-package EmployeeDB;
+package com.capgemini.employeeJDBC;
 
 import java.sql.Driver;
 import java.sql.DriverManager;

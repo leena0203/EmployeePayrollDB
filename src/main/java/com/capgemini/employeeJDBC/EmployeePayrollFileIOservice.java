@@ -1,4 +1,4 @@
-package EmployeeDB;
+package com.capgemini.employeeJDBC;
 
 import java.io.File;
 import java.io.IOException;

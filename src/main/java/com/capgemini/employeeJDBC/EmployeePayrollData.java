@@ -1,4 +1,4 @@
-package EmployeeDB;
+package com.capgemini.employeeJDBC;
 
 import java.time.LocalDate;
 import java.util.List;
